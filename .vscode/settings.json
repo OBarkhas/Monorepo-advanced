@@ -1,0 +1,15 @@
+{
+  "js/ts.preferences.importModuleSpecifierEnding": "index",
+  "js/ts.preferences.importModuleSpecifier": "project-relative",
+  "js/ts.preferences.includePackageJsonAutoImports": "on",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/.nx/**": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
+}

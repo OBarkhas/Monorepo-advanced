@@ -1,0 +1,26 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0",
+    "resolvePackageJsonImports": true,
+    "target": "es2024",
+    "module": "esnext",
+    "skipLibCheck": true,
+    "importHelpers": false,
+    "paths": {
+      "@hop-advanced-monorepo/shadcn": ["./libs/shared/shadcn/src/index.ts"],
+      "@hop-advanced-monorepo/shadcn/ui": ["./src/ui"],
+      "@hop-advanced-monorepo/shadcn/lib": ["./libs/shared/shadcn/src/lib"],
+      "@hop-advanced-monorepo/shadcn/hooks": ["./libs/shared/shadcn/src/hooks"],
+      "@hop-advanced-monorepo/shadcn/utils": [
+        "./libs/shared/shadcn/src/lib/utils.ts"
+      ],
+      "@hop-advanced-monorepo/todo-service": [
+        "./apps/todo/todo-service/src/index.ts"
+      ]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
