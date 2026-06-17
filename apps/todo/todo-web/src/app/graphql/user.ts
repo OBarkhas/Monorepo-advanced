@@ -1,6 +1,10 @@
 import { TypedDocumentNode } from '@apollo/client';
 import gql from 'graphql-tag';
-import { UserResponse } from '../types/user.type';
+import {
+  GetUserResponse,
+  GetUserVariables,
+  UserResponse,
+} from '../types/user.type';
 
 export const CREATE_USER = gql`
   mutation CreateUser($name: String!) {
@@ -9,7 +13,6 @@ export const CREATE_USER = gql`
     }
   }
 `;
-
 export const GET_USER: TypedDocumentNode<UserResponse> = gql`
   query GetUsers {
     getUsers {
@@ -17,6 +20,27 @@ export const GET_USER: TypedDocumentNode<UserResponse> = gql`
       name
       xp
       level
+    }
+  }
+`;
+
+export const GET_USER_BY_ID: TypedDocumentNode<
+  GetUserResponse,
+  GetUserVariables
+> = gql`
+  query GetUserById($id: ID!) {
+    getUserById(id: $id) {
+      id
+      name
+      xp
+      level
+      todos {
+        id
+        title
+        description
+        xpReward
+        isCompleted
+      }
     }
   }
 `;

@@ -1,7 +1,19 @@
 import { Context } from '../../../../types/index';
 
-export const getTodo = async (_: unknown, __: unknown, ctx: Context) => {
+interface GetTodoArgs {
+  userId: string;
+}
+
+export const getTodo = async (
+  _: unknown,
+  args: { userId: string },
+  ctx: Context,
+) => {
   const { db } = ctx;
-  const todo = await db.todo.findMany();
-  return todo;
+
+  return db.todo.findMany({
+    where: {
+      userId: args.userId,
+    },
+  });
 };

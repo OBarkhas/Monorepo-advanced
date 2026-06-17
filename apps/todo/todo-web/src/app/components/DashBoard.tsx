@@ -4,7 +4,7 @@ export const DashBoard = () => {
   return (
     <div>
       <div className="fixed bottom-0 flex justify-between w-screen bg-white  px-8 py-4">
-        <Link href="/">
+        <Link href="/home-page">
           <House />
         </Link>
         <Link href="/create-todo">
@@ -12,9 +12,6 @@ export const DashBoard = () => {
         </Link>
         <Link href="/search-user">
           <Search />
-        </Link>
-        <Link href="/users">
-          <CircleUserRound />
         </Link>
       </div>
     </div>
