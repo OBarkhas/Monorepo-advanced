@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import './global.css';
 import { ApolloProvider } from './provider/ApolloProvider';
-import { DashBoard } from './components/DashBoard';
 
 export const metadata: Metadata = {
   title: 'Welcome to todo-web',
@@ -16,7 +15,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <DashBoard />
         <ApolloProvider>{children}</ApolloProvider>
       </body>
     </html>
