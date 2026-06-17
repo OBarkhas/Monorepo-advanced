@@ -1,9 +1,4 @@
-import { Button } from '@hop-advanced-monorepo/shadcn';
 const Page = () => {
-  return (
-    <div>
-      <Button></Button>
-    </div>
-  );
+  return <div></div>;
 };
 export default Page;

@@ -16,21 +16,24 @@ export const userTypeDefs = gql`
     isCompleted: Boolean!
   }
 
+  type Response {
+    message: String!
+  }
+
   input TodoInput {
     title: String!
     description: String
     xpReward: Int!
+    userId: ID!
   }
 
   type Query {
     getUsers: [User]!
-    getTodoByUserId(userId: ID!): [Todo]!
+    getTodo(userId: ID!): [Todo]!
   }
-  type Response {
-    message: String!
-  }
+
   type Mutation {
     createUser(name: String!): Response!
-    createTodo(input: TodoInput): Response!
+    createTodo(input: TodoInput!): Response!
   }
 `;

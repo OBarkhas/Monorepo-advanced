@@ -1,6 +1,5 @@
+import { User } from '../../../../generated/prisma/client';
 import { Context } from '../../../../types/index';
-
-type User = { name: string };
 
 export const createUser = async (_: unknown, args: User, context: Context) => {
   const { db } = context;

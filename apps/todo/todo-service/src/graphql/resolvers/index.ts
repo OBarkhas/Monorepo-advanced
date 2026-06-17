@@ -1,11 +1,13 @@
-import * as Mutations from './mutations';
+import * as Mutation from './mutations';
 import * as Query from './queries';
 
 export const resolvers = {
   Query: {
     getUsers: Query.getUsers,
+    getTodo: Query.getTodo,
   },
   Mutation: {
-    createUser: Mutations.createUser,
+    createUser: Mutation.createUser,
+    createTodo: Mutation.createTodo,
   },
 };
