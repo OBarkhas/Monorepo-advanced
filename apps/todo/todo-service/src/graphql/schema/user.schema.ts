@@ -32,11 +32,21 @@ export const userTypeDefs = gql`
     getUserById(id: ID!): User
     getTodo(userId: ID!): [Todo]!
   }
+  type CompleteTodoResponse {
+    message: String!
+    xpGained: Int!
+    leveledUp: Boolean!
+    newLevel: Int!
+    newXp: Int!
+    currentLevelXp: Int!
+    xpToNextLevel: Int!
+  }
 
   type Mutation {
     createUser(name: String!): Response!
     createTodo(input: TodoInput!): Response!
     deleteTodo(id: ID!): String!
     deleteUser(userId: ID!): String!
+    completeTodo(userId: ID!, todoId: ID!): CompleteTodoResponse!
   }
 `;

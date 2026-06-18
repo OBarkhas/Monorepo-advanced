@@ -33,3 +33,34 @@ export const DELETE_TODO: TypedDocumentNode<
     deleteTodo(id: $id)
   }
 `;
+export const GET_USER_PROFILE = gql`
+  query GetUserById($id: ID!) {
+    getUserById(id: $id) {
+      id
+      name
+      xp
+      level
+      todos {
+        id
+        title
+        description
+        xpReward
+        isCompleted
+      }
+    }
+  }
+`;
+
+export const COMPLETE_TODO = gql`
+  mutation CompleteTodo($userId: ID!, $todoId: ID!) {
+    completeTodo(userId: $userId, todoId: $todoId) {
+      message
+      xpGained
+      leveledUp
+      newLevel
+      newXp
+      currentLevelXp
+      xpToNextLevel
+    }
+  }
+`;
