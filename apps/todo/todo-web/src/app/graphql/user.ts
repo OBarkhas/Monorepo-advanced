@@ -1,6 +1,8 @@
 import { TypedDocumentNode } from '@apollo/client';
 import gql from 'graphql-tag';
 import {
+  DeleteUserResponse,
+  DeleteUserVariables,
   GetUserResponse,
   GetUserVariables,
   UserResponse,
@@ -42,5 +44,13 @@ export const GET_USER_BY_ID: TypedDocumentNode<
         isCompleted
       }
     }
+  }
+`;
+export const DELETE_USER: TypedDocumentNode<
+  DeleteUserResponse,
+  DeleteUserVariables
+> = gql`
+  mutation DeleteUser($userId: ID!) {
+    deleteUser(userId: $userId)
   }
 `;

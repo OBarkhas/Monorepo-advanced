@@ -37,5 +37,6 @@ export const userTypeDefs = gql`
     createUser(name: String!): Response!
     createTodo(input: TodoInput!): Response!
     deleteTodo(id: ID!): String!
+    deleteUser(userId: ID!): String!
   }
 `;

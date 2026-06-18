@@ -1,3 +1,17 @@
+export type DeleteTodoResponse = {
+  deleteTodo: string;
+};
+
+export type DeleteTodoVariables = {
+  id: string;
+};
+export type DeleteUserResponse = {
+  deleteUser: string;
+};
+export type DeleteUserVariables = {
+  userId: string;
+};
+
 export type User = {
   id: string;
   name: string;
@@ -40,10 +54,3 @@ export interface TodoResponse {
 export interface TodoVariables {
   userId: string;
 }
-export type DeleteTodoResponse = {
-  deleteTodo: string;
-};
-
-export type DeleteTodoVariables = {
-  id: string;
-};
