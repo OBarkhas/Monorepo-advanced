@@ -10,5 +10,6 @@ export const resolvers = {
   Mutation: {
     createUser: Mutation.createUser,
     createTodo: Mutation.createTodo,
+    deleteTodo: Mutation.deleteTodo,
   },
 };

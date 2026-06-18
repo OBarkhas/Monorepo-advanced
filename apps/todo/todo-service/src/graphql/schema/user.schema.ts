@@ -36,5 +36,6 @@ export const userTypeDefs = gql`
   type Mutation {
     createUser(name: String!): Response!
     createTodo(input: TodoInput!): Response!
+    deleteTodo(id: ID!): String!
   }
 `;

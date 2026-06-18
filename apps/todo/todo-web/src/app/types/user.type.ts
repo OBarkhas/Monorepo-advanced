@@ -1,4 +1,4 @@
-export type UserTypes = {
+export type User = {
   id: string;
   name: string;
   xp: number;
@@ -6,13 +6,7 @@ export type UserTypes = {
 };
 
 export type UserResponse = {
-  getUsers: UserTypes[];
-};
-export type User = {
-  id: string;
-  name: string;
-  xp: number;
-  level: number;
+  getUsers: User[];
 };
 
 export type GetUserResponse = {
@@ -46,3 +40,10 @@ export interface TodoResponse {
 export interface TodoVariables {
   userId: string;
 }
+export type DeleteTodoResponse = {
+  deleteTodo: string;
+};
+
+export type DeleteTodoVariables = {
+  id: string;
+};

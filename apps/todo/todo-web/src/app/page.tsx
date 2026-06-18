@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { GET_USER } from './graphql/user';
 import { useQuery } from '@apollo/client/react';
+import { CreateUser } from './components/CreateUser';
 
 const Page = () => {
   const { data, loading, error } = useQuery(GET_USER);
@@ -15,16 +16,19 @@ const Page = () => {
 
   return (
     <div>
-      {users.map((user: any) => (
-        <div
-          key={user.id}
-          onClick={() => router.push(`/users/${user.id}`)}
-          style={{ cursor: 'pointer' }}
-        >
-          <div>{user.name}</div>
-          <div>{user.id}</div>
-        </div>
-      ))}
+      <CreateUser />
+      <div>
+        {users.map((user: any) => (
+          <div
+            key={user.id}
+            onClick={() => router.push(`/users/${user.id}`)}
+            style={{ cursor: 'pointer' }}
+          >
+            <div>{user.name}</div>
+            <div>{user.id}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

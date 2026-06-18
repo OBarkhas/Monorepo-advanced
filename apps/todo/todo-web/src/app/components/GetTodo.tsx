@@ -2,13 +2,12 @@
 
 import { useQuery } from '@apollo/client/react';
 import { GET_TODO } from '../graphql/todo';
-
+import { DeleteTodo } from './DeleteTodo';
 export const GetTodo = ({ userId }: { userId: string }) => {
-  const { data, loading, error } = useQuery(GET_TODO, {
+  const { data, loading, error, refetch } = useQuery(GET_TODO, {
     variables: { userId },
     skip: !userId,
   });
-
   const todos = data?.getTodo || [];
 
   if (loading) return <p>Loading...</p>;
@@ -55,6 +54,9 @@ export const GetTodo = ({ userId }: { userId: string }) => {
           >
             <span style={{ color: '#4CAF50' }}>Reward: {todo.xpReward} XP</span>
             <span>{todo.isCompleted ? ' Completed' : 'In Progress'}</span>
+          </div>
+          <div style={{ marginTop: '12px' }}>
+            <DeleteTodo todoId={todo.id} onDeleted={refetch} />
           </div>
         </div>
       ))}

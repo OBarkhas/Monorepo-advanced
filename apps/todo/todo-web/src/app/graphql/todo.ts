@@ -1,6 +1,11 @@
 import { TypedDocumentNode } from '@apollo/client';
 import gql from 'graphql-tag';
-import { TodoResponse, TodoVariables } from '../types/user.type';
+import {
+  DeleteTodoResponse,
+  DeleteTodoVariables,
+  TodoResponse,
+  TodoVariables,
+} from '../types/user.type';
 export const CREATE_TODO = gql`
   mutation CreateTodo($input: TodoInput!) {
     createTodo(input: $input) {
@@ -18,5 +23,13 @@ export const GET_TODO: TypedDocumentNode<TodoResponse, TodoVariables> = gql`
       xpReward
       isCompleted
     }
+  }
+`;
+export const DELETE_TODO: TypedDocumentNode<
+  DeleteTodoResponse,
+  DeleteTodoVariables
+> = gql`
+  mutation DeleteTodo($id: ID!) {
+    deleteTodo(id: $id)
   }
 `;
