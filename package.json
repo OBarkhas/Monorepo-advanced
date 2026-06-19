@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build:service": "bunx nx build todo-service",
+    "prism:deploy": "bunx prisma generate && bunx prisma migrate deploy",
     "start:service": "bun apps/todo/todo-service/src/server.ts"
   },
   "private": true,
