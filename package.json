@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "nx build todo-service",
-    "start": "nx serve todo-service"
+    "start": "cd apps/todo/todo-service && bun run src/server.ts"
   },
   "private": true,
   "dependencies": {
