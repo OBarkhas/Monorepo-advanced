@@ -12,30 +12,31 @@ const UserPage = async ({ params }: PageProps) => {
   const userId = resolvedParams.id;
 
   return (
-    <div>
-      <BackToUsers />
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#f2f0ed',
+        padding: '32px 24px 64px',
+      }}
+    >
+      <div style={{ maxWidth: '480px', margin: '0 auto 24px' }}>
+        <BackToUsers />
+      </div>
+
       <div
         style={{
-          padding: '24px',
-          maxWidth: '600px',
+          maxWidth: '480px',
           margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: '32px',
+          gap: '16px',
         }}
       >
         <GetUserById userId={userId} />
-        <section
-          style={{ borderBottom: '1px solid #eee', paddingBottom: '24px' }}
-        >
-          <h2>Add new todo</h2>
-          <CreateTodo userId={userId} />
-        </section>
 
-        <section>
-          <h2>Todo list</h2>
-          <GetTodo userId={userId} />
-        </section>
+        <CreateTodo userId={userId} />
+
+        <GetTodo userId={userId} />
       </div>
     </div>
   );
