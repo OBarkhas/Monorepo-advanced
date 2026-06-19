@@ -2,7 +2,10 @@
   "name": "@hop-advanced-monorepo/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "nx build todo-service",
+    "start": "nx serve todo-service"
+  },
   "private": true,
   "dependencies": {
     "@apollo/client": "^4.2.3",
