@@ -1,0 +1,26 @@
+{
+  "name": "school-funding-service",
+
+  "main": "src/index.ts",
+
+  "compatibility_date": "2026-06-22",
+
+  "compatibility_flags": ["nodejs_compat"],
+
+  "dev": {
+    "port": 4001,
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "school-funding",
+      "database_id": "d9e41e79-97e9-47c0-9ac5-ed0bfa34a7ad",
+      "migrations_dir": "./drizzle",
+    },
+  ],
+  "vars": {
+    "CLERK_PUBLISHABLE_KEY": "",
+    "CLERK_SECRET_KEY": "",
+  },
+}

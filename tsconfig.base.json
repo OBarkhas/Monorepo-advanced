@@ -19,7 +19,11 @@
       ],
       "@hop-advanced-monorepo/todo-service": [
         "./apps/todo/todo-service/src/index.ts"
-      ]
+      ],
+      "@hop-advanced-monorepo/school-funding-service": [
+        "./apps/school-funding/school-funding-service/src/index.ts"
+      ],
+      "@hop-advanced-monorepo/clerk": ["./libs/shared/clerk/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

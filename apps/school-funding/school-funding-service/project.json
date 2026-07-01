@@ -1,0 +1,61 @@
+{
+  "name": "school-funding-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/school-funding/school-funding-service/src",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project school-funding-service --web",
+  "targets": {
+    "serve-local": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["lint", "build"],
+      "options": {
+        "command": "bunx wrangler dev --local -env=.dev.vars",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "serve-remote": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["lint", "build"],
+      "options": {
+        "command": "bunx wrangler dev --remote",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler build",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "drizzle:push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx drizzle-kit push",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "drizzle:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx drizzle-kit generate",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "drizzle:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": " bunx drizzle-kit studio",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "drizzle:migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx drizzle-kit migrate",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@ const startServer = async () => {
   });
 
   const { url } = await startStandaloneServer<Context>(server, {
-    listen: { port: Number(process.env.PORT) || 4001 },
+    listen: { port: Number(process.env['PORT']) || 4001 },
     context: async ({ req }) => {
       return { db };
     },
