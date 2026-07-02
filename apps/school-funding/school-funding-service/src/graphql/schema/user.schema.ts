@@ -29,5 +29,6 @@ export const usertypeDefs = gql`
       role: UserRole!
       age: Int
     ): User!
+    deleteUser(targetUserId: ID!, requesterUserId: ID!): Response!
   }
 `;

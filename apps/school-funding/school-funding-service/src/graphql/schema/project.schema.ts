@@ -90,9 +90,8 @@ export const projectTypeDefs = gql`
     ): Project!
 
     addComment(projectId: ID!, authorId: ID!, content: String!): Comment!
-
     voteProject(projectId: ID!, studentId: ID!): Vote!
-
+    deleteProject(projectId: ID!, userId: ID!): Response!
     awardCoins(teacherId: ID!, studentId: ID!, amount: Int!): User!
   }
 `;

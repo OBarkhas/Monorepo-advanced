@@ -1,31 +1,4 @@
-import { drizzleProvider } from '../drizzle-provider';
-
 export type Maybe<T> = T | null | undefined;
-export type DB = ReturnType<typeof drizzleProvider>;
-
-export interface GraphQLContext {
-  db: DB;
-  env: any;
-  userId?: string;
-}
-
-export type BaseQueryResolver<TResult = any, TArgs = any, TParent = unknown> = (
-  parent: TParent,
-  args: TArgs,
-  context: GraphQLContext,
-  info: any,
-) => Promise<TResult> | TResult;
-
-export type BaseMutationResolver<
-  TResult = any,
-  TArgs = any,
-  TParent = unknown,
-> = (
-  parent: TParent,
-  args: TArgs,
-  context: GraphQLContext,
-  info: any,
-) => Promise<TResult> | TResult;
 
 export enum UserRole {
   STUDENT = 'STUDENT',
@@ -148,40 +121,3 @@ export type AwardCoinsArgs = {
   studentId: string;
   amount: number;
 };
-
-export type DeleteUserArgs = {
-  targetUserId: string;
-  requesterUserId: string;
-};
-
-export type DeleteProjectArgs = {
-  projectId: string;
-  userId: string;
-};
-
-export interface QueryResolvers {
-  getUsers: BaseQueryResolver<User[]>;
-  getUserById: BaseQueryResolver<User | null, { id: string }>;
-  getPublicProjects: BaseQueryResolver<Project[]>;
-  getPendingProjects: BaseQueryResolver<Project[]>;
-  getProjectsByStudent: BaseQueryResolver<Project[], { studentId: string }>;
-  getProjectById: BaseQueryResolver<Project | null, { id: string }>;
-  getCommentsByProject: BaseQueryResolver<Comment[], { projectId: string }>;
-  getLeaderboard: BaseQueryResolver<Project[]>;
-  getCoinAwardsByStudent: BaseQueryResolver<
-    CoinTransaction[],
-    { studentId: string }
-  >;
-}
-
-export interface MutationResolvers {
-  createUser: BaseMutationResolver<User, CreateUserArgs>;
-  createProject: BaseMutationResolver<Project, CreateProjectArgs>;
-  updateProject: BaseMutationResolver<Project, UpdateProjectArgs>;
-  updateProjectStatus: BaseMutationResolver<Project, UpdateProjectStatusArgs>;
-  voteProject: BaseMutationResolver<Vote, VoteProjectArgs>;
-  addComment: BaseMutationResolver<Comment, AddCommentArgs>;
-  awardCoins: BaseMutationResolver<User, AwardCoinsArgs>;
-  deleteUser: BaseMutationResolver<Response, DeleteUserArgs>;
-  deleteProject: BaseMutationResolver<Response, DeleteProjectArgs>;
-}

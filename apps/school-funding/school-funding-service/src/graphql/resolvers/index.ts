@@ -21,5 +21,7 @@ export const resolvers = {
     voteProject: Mutation.voteProject,
     addComment: Mutation.addComment,
     awardCoins: Mutation.awardCoins,
+    deleteProject: Mutation.deleteProject,
+    deleteUser: Mutation.deleteUser,
   },
 };

@@ -4,3 +4,5 @@ export * from './project-actions';
 export * from './update-project';
 export * from './add-comment';
 export * from './award-coins';
+export * from './delete-project';
+export * from './delete-user';
