@@ -1,18 +1,28 @@
+import {
+  getAuthFromRequest,
+  getClerkUser,
+} from './../../../../libs/shared/clerk/src/lib/auth';
+
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateCloudflareWorkersHandler } from '@as-integrations/cloudflare-workers';
-
-import { GraphQLContext } from './types';
-
-import { drizzleProvider } from './drizzle-provider';
-import { typeDefs } from './graphql/schema';
+import { drizzleProvider } from './drizzle-provider/index';
+import { GraphQLContext } from './types/index';
 import { ExecutionContext } from '@cloudflare/workers-types';
-import { resolvers } from './graphql/resolvers';
+import { resolvers } from './graphql/resolvers/index';
+import { typeDefs } from './graphql/schema';
+import { handleClerkWebhook } from './webhook';
 
-import { getAuthFromRequest } from '../../../../libs/shared/clerk/src/auth';
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
+  'Access-Control-Allow-Headers':
+    'Content-Type, Authorization, X-Requested-With',
+};
 
 const server = new ApolloServer<GraphQLContext>({
-  typeDefs: typeDefs,
-  resolvers: resolvers,
+  typeDefs,
+  resolvers,
+  introspection: true,
 });
 
 const handler = startServerAndCreateCloudflareWorkersHandler<
@@ -21,18 +31,42 @@ const handler = startServerAndCreateCloudflareWorkersHandler<
 >(server, {
   context: async ({ request, env }) => {
     const db = drizzleProvider(env.DB);
-
     const auth = await getAuthFromRequest(request, env);
+    const user = auth ? await getClerkUser(env, auth.userId) : null;
+    console.log(
+      '[Clerk] user:',
+      user ? `${user.userName}, ${user.email}` : 'not authenticated',
+    );
     return {
       db,
       env,
-      userId: auth?.userId ?? undefined,
+      userId: user?.userId,
+      userName: user?.userName,
+      email: user?.email,
     };
   },
 });
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    return handler(request, env, ctx);
+    const url = new URL(request.url);
+
+    if (url.pathname === '/api/webhook') {
+      if (request.method !== 'POST') {
+        return new Response('Method Not Allowed', { status: 405 });
+      }
+      return await handleClerkWebhook(request, env);
+    }
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
+
+    const response = await handler(request, env, ctx);
+
+    const newResponse = new Response(response.body, response);
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      newResponse.headers.set(key, value);
+    });
+    return newResponse;
   },
 };

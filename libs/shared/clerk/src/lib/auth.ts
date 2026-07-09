@@ -2,7 +2,7 @@ import { createClerkClient, verifyToken } from '@clerk/backend';
 
 export type ClerkEnv = {
   CLERK_SECRET_KEY: string;
-  CLERK_PUBLISHABLE_KEY: string;
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string;
 };
 
 type ClerkUserType = {
@@ -14,7 +14,7 @@ type ClerkUserType = {
 export const createClerk = (env: ClerkEnv) => {
   return createClerkClient({
     secretKey: env.CLERK_SECRET_KEY,
-    publishableKey: env.CLERK_PUBLISHABLE_KEY,
+    publishableKey: env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
   });
 };
 
