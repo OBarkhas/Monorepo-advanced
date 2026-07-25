@@ -15,6 +15,13 @@
       "when": 1782793833330,
       "tag": "0001_brave_impossible_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784777571725,
+      "tag": "0002_superb_thunderbird",
+      "breakpoints": true
     }
   ]
 }

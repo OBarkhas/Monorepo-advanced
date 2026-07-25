@@ -4,7 +4,7 @@ import {
   ApolloLink,
   HttpLink,
 } from '@apollo/client';
-import { SetContextLink } from '@apollo/client/link/context';
+import { setContext } from '@apollo/client/link/context';
 
 type GetTokenType = () => Promise<string | null>;
 
@@ -13,7 +13,7 @@ const httpLink = new HttpLink({
 });
 
 export const createApolloClient = (getToken: GetTokenType) => {
-  const authLink = new SetContextLink(async (prevContext, operation) => {
+  const authLink = setContext(async (prevContext, operation) => {
     try {
       const token = await getToken();
 
@@ -27,13 +27,35 @@ export const createApolloClient = (getToken: GetTokenType) => {
         },
       };
     } catch (error) {
-      console.error('Error fetching token in SetContextLink:', error);
+      console.error('Error fetching token in setContext:', error);
       return prevContext;
     }
   });
 
   return new ApolloClient({
     link: ApolloLink.from([authLink, httpLink]),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            getPublicProjects: {
+              merge(existing = [], incoming: any[]) {
+                return incoming;
+              },
+            },
+            getProjectsByStudent: {
+              merge(existing = [], incoming: any[]) {
+                return incoming;
+              },
+            },
+            getLeaderboard: {
+              merge(existing = [], incoming: any[]) {
+                return incoming;
+              },
+            },
+          },
+        },
+      },
+    }),
   });
 };

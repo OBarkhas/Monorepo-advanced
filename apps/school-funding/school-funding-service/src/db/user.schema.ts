@@ -1,4 +1,3 @@
-import { pgEnum } from 'drizzle-orm/pg-core';
 import { int, sqliteTable, text, index } from 'drizzle-orm/sqlite-core';
 import { nanoid } from 'nanoid';
 import { UserRole } from './../types/index';
@@ -91,6 +90,21 @@ export const commentsTable = sqliteTable('comments_table', {
     .notNull(),
   updatedAt: text('updated_at')
     .$onUpdate(() => new Date().toISOString())
+    .notNull(),
+});
+
+export const weeklyWinnersTable = sqliteTable('weekly_winners_table', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  rank: int('rank').notNull(),
+  projectId: text('project_id').notNull(),
+  projectTitle: text('project_title').notNull(),
+  creatorId: text('creator_id').notNull(),
+  coinsCollected: int('coins_collected').default(0).notNull(),
+  weekLabel: text('week_label').notNull(),
+  createdAt: text('created_at')
+    .$defaultFn(() => new Date().toISOString())
     .notNull(),
 });
 

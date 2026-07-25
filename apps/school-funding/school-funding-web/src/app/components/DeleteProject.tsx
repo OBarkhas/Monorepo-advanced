@@ -5,6 +5,8 @@ import { TypedDocumentNode } from '@apollo/client';
 import { useAuth } from '@clerk/nextjs';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client/react';
+import { toast } from 'sonner';
+import { Trash2, Loader2 } from 'lucide-react';
 
 type Response = {
   success: boolean;
@@ -38,9 +40,10 @@ export function DeleteProjectButton({
   onSuccess,
 }: DeleteProjectButtonProps) {
   const { userId, isLoaded } = useAuth();
-  const [errorMessage, setErrorMessage] = useState('');
+  const [confirming, setConfirming] = useState(false);
 
   const [deleteProject, { loading }] = useMutation(DELETE_PROJECT, {
+    refetchQueries: ['GetAllCombinedProjects', 'GetLeaderboard'],
     update(cache, { data }) {
       if (data?.deleteProject.success) {
         cache.modify({
@@ -59,31 +62,43 @@ export function DeleteProjectButton({
         });
       }
     },
+    onCompleted: (data: any) => {
+      if (data.deleteProject.success) {
+        toast.success('Project Deleted', {
+          description: data.deleteProject.message || 'Project removed successfully.',
+          icon: '🗑️',
+        });
+        if (onSuccess) onSuccess();
+      }
+    },
+    onError: (err) => {
+      toast.error('Delete Failed', {
+        description: err.message,
+      });
+    },
   });
 
   const handleDelete = async () => {
     if (!userId) return;
 
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this project?',
-    );
-    if (!confirmDelete) return;
-
-    try {
-      setErrorMessage('');
-      const res = await deleteProject({
-        variables: {
-          projectId,
-          userId,
-        },
+    if (!confirming) {
+      setConfirming(true);
+      toast('Are you sure?', {
+        description: 'This action cannot be undone. Click delete again to confirm.',
+        icon: '⚠️',
+        duration: 5000,
       });
-
-      if (res.data?.deleteProject.success && onSuccess) {
-        onSuccess();
-      }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to delete the project.');
+      setTimeout(() => setConfirming(false), 5000);
+      return;
     }
+
+    await deleteProject({
+      variables: {
+        projectId,
+        userId,
+      },
+    });
+    setConfirming(false);
   };
 
   if (!isLoaded || !userId) {
@@ -91,18 +106,21 @@ export function DeleteProjectButton({
   }
 
   return (
-    <div className="inline-block">
-      <button
-        onClick={handleDelete}
-        disabled={loading}
-        className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700 disabled:bg-gray-400 transition"
-      >
-        {loading ? 'Deleting...' : 'Delete Project'}
-      </button>
-
-      {errorMessage && (
-        <p className="text-xs text-red-500 mt-1">{errorMessage}</p>
+    <button
+      onClick={handleDelete}
+      disabled={loading}
+      className={`px-3 py-1.5 rounded-2xl text-xs font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center gap-1.5 ${
+        confirming
+          ? 'bg-red-600 text-white hover:bg-red-700 shadow-md'
+          : 'bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 hover:text-red-600'
+      }`}
+    >
+      {loading ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : (
+        <Trash2 className="h-3.5 w-3.5" />
       )}
-    </div>
+      {loading ? 'Deleting...' : confirming ? 'Confirm Delete' : 'Delete'}
+    </button>
   );
 }

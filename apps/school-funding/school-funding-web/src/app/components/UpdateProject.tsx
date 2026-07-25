@@ -5,6 +5,8 @@ import { TypedDocumentNode } from '@apollo/client';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { useAuth } from '@clerk/nextjs';
 import gql from 'graphql-tag';
+import { toast } from 'sonner';
+import { Save, Loader2 } from 'lucide-react';
 
 type ProjectStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'FUNDED';
 
@@ -80,7 +82,6 @@ export function UpdateProjectForm({
   const { userId, isLoaded } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
 
   const { data: queryData, loading: queryLoading } = useQuery(
     GET_PROJECT_BY_ID,
@@ -90,8 +91,21 @@ export function UpdateProjectForm({
     },
   );
 
-  const [updateProject, { loading: mutationLoading, data: mutationData }] =
-    useMutation(UPDATE_PROJECT);
+  const [updateProject, { loading: mutationLoading }] = useMutation(UPDATE_PROJECT, {
+    refetchQueries: ['GetAllCombinedProjects', 'GetProjectById'],
+    onCompleted: (data: any) => {
+      toast.success('Project Updated!', {
+        description: `Status: ${data.updateProject.status}`,
+        icon: '✅',
+      });
+      if (onSuccess) onSuccess();
+    },
+    onError: (err) => {
+      toast.error('Update Failed', {
+        description: err.message,
+      });
+    },
+  });
 
   useEffect(() => {
     if (queryData?.getProjectById) {
@@ -104,61 +118,68 @@ export function UpdateProjectForm({
     e.preventDefault();
     if (!userId || !queryData?.getProjectById) return;
 
-    try {
-      setErrorMessage('');
-      await updateProject({
-        variables: {
-          id: projectId,
-          title,
-          description,
-          images: queryData.getProjectById.images,
-          creatorId: userId,
-        },
-      });
-
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to update the project.');
-    }
+    await updateProject({
+      variables: {
+        id: projectId,
+        title,
+        description,
+        images: queryData.getProjectById.images,
+        creatorId: userId,
+      },
+    });
   };
 
   if (!isLoaded || queryLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-6 w-6 text-teal-500 animate-spin" />
+      </div>
+    );
   }
 
   if (!userId) {
-    return <p>Please sign in to update this project.</p>;
+    return (
+      <div className="p-4 text-center glass-dark rounded-2xl text-teal-700 border border-teal-200/50 text-sm">
+        Please sign in to update this project.
+      </div>
+    );
   }
 
   const project = queryData?.getProjectById;
   if (!project) {
-    return <p>Project not found.</p>;
+    return (
+      <div className="p-4 text-center glass-dark rounded-2xl text-gray-500 text-sm">
+        Project not found.
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-md mx-auto mt-6 p-6 border rounded-lg shadow bg-white">
-      <h2 className="text-xl font-bold mb-4">Update Project</h2>
+    <div className="bg-white/80 backdrop-blur-xl border border-teal-100/60 rounded-3xl p-6 shadow-xl shadow-teal-200/20 space-y-5">
+      <h2 className="text-xl font-bold text-gray-900">Update Project</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Title</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+            Title
+          </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border p-2 rounded"
+            className="w-full border border-teal-200/60 p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 text-sm bg-white/60 transition-all"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Description</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+            Description
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border p-2 rounded"
+            className="w-full border border-teal-200/60 p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 text-sm bg-white/60 transition-all resize-none"
             rows={4}
             required
           />
@@ -167,24 +188,16 @@ export function UpdateProjectForm({
         <button
           type="submit"
           disabled={mutationLoading}
-          className="w-full bg-blue-600 text-white p-2 rounded disabled:bg-gray-400"
+          className="w-full bg-gradient-to-r from-teal-600 to-emerald-500 hover:from-teal-500 hover:to-emerald-400 text-white font-semibold p-3 rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:shadow-teal-200/40 hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
         >
+          {mutationLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}
           {mutationLoading ? 'Updating...' : 'Update Project'}
         </button>
       </form>
-
-      {errorMessage && (
-        <p className="mt-4 p-2 bg-red-50 text-red-500 border border-red-200 rounded text-sm">
-          {errorMessage}
-        </p>
-      )}
-
-      {mutationData && (
-        <p className="mt-4 p-2 bg-green-50 text-green-600 border border-green-200 rounded text-sm">
-          Project updated successfully! Status is now{' '}
-          {mutationData.updateProject.status}.
-        </p>
-      )}
     </div>
   );
 }

@@ -71,6 +71,17 @@ export type CoinTransaction = {
   createdAt: string;
 };
 
+export type WeeklyWinner = {
+  id: string;
+  rank: number;
+  projectId: string;
+  projectTitle: string;
+  creatorId: string;
+  coinsCollected: number;
+  weekLabel: string;
+  createdAt: string;
+};
+
 export type Response = {
   success: boolean;
   message: string;

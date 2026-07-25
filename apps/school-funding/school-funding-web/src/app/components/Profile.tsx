@@ -14,6 +14,8 @@ import {
   Coins,
   Award,
   ArrowUpRight,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
 
 type User = {
@@ -41,6 +43,7 @@ const GET_MY_PROFILE_AND_PROJECTS: TypedDocumentNode<
       title
       description
       status
+      rejectionReason
       totalCoinsCollected
     }
   }
@@ -58,22 +61,22 @@ export function MyProfile() {
   if (!isLoaded || loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <p className="text-gray-500 animate-pulse">Loading your profile...</p>
+        <Loader2 className="h-8 w-8 text-teal-500 animate-spin" />
       </div>
     );
   }
 
   if (!userId) {
     return (
-      <div className="max-w-md mx-auto mt-6 p-4 text-center border rounded bg-yellow-50 text-yellow-700">
-        Please sign in to view your profile page.
+      <div className="max-w-lg mx-auto mt-16 p-6 text-center glass-dark rounded-3xl text-teal-700 border border-teal-200/50">
+        <p className="font-medium">Please sign in to view your profile.</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-md mx-auto mt-6 p-4 border rounded bg-red-50 text-red-500">
+      <div className="max-w-lg mx-auto mt-16 p-6 text-center bg-red-50/80 backdrop-blur rounded-3xl text-red-600 border border-red-200/60">
         Error: {error.message}
       </div>
     );
@@ -84,7 +87,7 @@ export function MyProfile() {
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto mt-6 p-4 text-center border rounded bg-gray-50 text-gray-500">
+      <div className="max-w-lg mx-auto mt-16 p-6 text-center glass-dark rounded-3xl text-teal-700 border border-teal-200/50">
         User records could not be found.
       </div>
     );
@@ -92,46 +95,61 @@ export function MyProfile() {
 
   const isTeacher = user.role === 'TEACHER';
 
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case 'APPROVED':
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200/50';
+      case 'PENDING':
+        return 'bg-amber-50 text-amber-700 border-amber-200/50';
+      case 'REJECTED':
+        return 'bg-red-50 text-red-700 border-red-200/50';
+      case 'FUNDED':
+        return 'bg-teal-50 text-teal-700 border-teal-200/50';
+      default:
+        return 'bg-gray-50 text-gray-700 border-gray-200/50';
+    }
+  };
+
   return (
-    <div className="max-w-3xl mx-auto mt-8 p-4 space-y-8">
-      <div className="relative border border-gray-100 rounded-3xl bg-white p-6 shadow-sm overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 to-indigo-600" />
+    <div className="max-w-3xl mx-auto mt-6 p-4 sm:p-6 space-y-8">
+      <div className="bg-white/80 backdrop-blur-xl border border-teal-100/60 rounded-3xl p-6 sm:p-8 shadow-xl shadow-teal-200/20 overflow-hidden relative">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-600" />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 mt-2">
-          <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-600 rounded-2xl border border-blue-100">
+          <div className="p-4 bg-gradient-to-br from-teal-100 to-emerald-100 text-teal-600 rounded-2xl border border-teal-200/50 shadow-lg shadow-teal-200/30">
             <UserIcon className="h-8 w-8" />
           </div>
           <div className="space-y-1">
-            <h1 className="text-2xl font-black text-gray-950 tracking-tight">
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
               {user.userName}
             </h1>
             <p className="text-xs font-mono text-gray-400">
-              Account ID: {user.id}
+              Account ID: {user.id.slice(0, 16)}...
             </p>
           </div>
         </div>
 
         {!isTeacher && (
-          <div className="grid grid-cols-2 gap-4 mt-6 border-t pt-6">
-            <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-100 flex items-center gap-3">
+          <div className="grid grid-cols-2 gap-4 mt-6 border-t border-teal-100/50 pt-6">
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 flex items-center gap-3">
               <Coins className="h-5 w-5 text-amber-600 shrink-0" />
               <div>
-                <p className="text-xs text-amber-600 font-medium uppercase tracking-wider">
+                <p className="text-xs text-amber-600 font-semibold uppercase tracking-wider">
                   Coin Balance
                 </p>
-                <p className="text-lg font-bold text-gray-900">
+                <p className="text-xl font-bold text-gray-900">
                   {user.coinBalance ?? 0}
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-100 flex items-center gap-3">
-              <FolderKanban className="h-5 w-5 text-blue-600 shrink-0" />
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-200/50 flex items-center gap-3">
+              <FolderKanban className="h-5 w-5 text-teal-600 shrink-0" />
               <div>
-                <p className="text-xs text-blue-600 font-medium uppercase tracking-wider">
+                <p className="text-xs text-teal-600 font-semibold uppercase tracking-wider">
                   My Projects
                 </p>
-                <p className="text-lg font-bold text-gray-900">
+                <p className="text-xl font-bold text-gray-900">
                   {myProjects.length}
                 </p>
               </div>
@@ -140,17 +158,17 @@ export function MyProfile() {
         )}
       </div>
 
-      <div className="border border-gray-100 rounded-2xl bg-white p-6 shadow-sm space-y-4">
+      <div className="bg-white/80 backdrop-blur-xl border border-teal-100/60 rounded-3xl p-6 sm:p-8 shadow-xl shadow-teal-200/20 space-y-5">
         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
-          Account Specifications
+          Account Details
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-center gap-3 p-3 border border-gray-50 rounded-xl bg-gray-50/30">
-            <Mail className="h-5 w-5 text-gray-400 shrink-0" />
+          <div className="flex items-center gap-3 p-4 rounded-2xl bg-teal-50/40 border border-teal-100/50">
+            <Mail className="h-5 w-5 text-teal-500 shrink-0" />
             <div>
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
-                Email Contact
+              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+                Email Address
               </p>
               <p className="text-sm font-semibold text-gray-900">
                 {user.email}
@@ -158,13 +176,13 @@ export function MyProfile() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 border border-gray-50 rounded-xl bg-gray-50/30">
-            <Shield className="h-5 w-5 text-gray-400 shrink-0" />
+          <div className="flex items-center gap-3 p-4 rounded-2xl bg-teal-50/40 border border-teal-100/50">
+            <Shield className="h-5 w-5 text-teal-500 shrink-0" />
             <div>
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
-                Workspace Role
+              <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+                Role
               </p>
-              <span className="inline-block px-2 py-0.5 mt-0.5 text-xs font-bold rounded bg-blue-100 text-blue-800 uppercase tracking-wide">
+              <span className="inline-block px-3 py-0.5 mt-0.5 text-xs font-bold rounded-full bg-gradient-to-r from-teal-100 to-emerald-100 text-teal-800 border border-teal-200/50 uppercase tracking-wide">
                 {user.role}
               </span>
             </div>
@@ -175,9 +193,9 @@ export function MyProfile() {
       {!isTeacher && (
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-gray-800" />
-            <h2 className="text-xl font-bold text-gray-900">
-              Track Records & Submissions
+            <Award className="h-5 w-5 text-teal-600" />
+            <h2 className="text-xl font-bold text-gray-900 tracking-tight">
+              My Projects
             </h2>
           </div>
 
@@ -187,24 +205,26 @@ export function MyProfile() {
                 <Link
                   key={project.id}
                   href={`/projects/${project.id}`}
-                  className="p-5 border border-gray-100 rounded-xl bg-white shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-gray-300 hover:shadow-md transition-all group block cursor-pointer"
+                  className="group bg-white/80 backdrop-blur-xl border border-teal-100/60 rounded-3xl p-6 shadow-lg shadow-teal-200/10 hover:shadow-xl hover:shadow-teal-200/20 transition-all duration-300 hover:scale-[1.01] cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
                 >
                   <div className="space-y-1 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-bold text-gray-900 text-base group-hover:text-blue-600 transition-colors flex items-center gap-1.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="font-bold text-gray-900 text-base group-hover:text-teal-600 transition-colors flex items-center gap-1.5">
                         <span>{project.title}</span>
-                        <ArrowUpRight className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        <ArrowUpRight className="h-4 w-4 text-teal-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                       </h4>
-                      <span className="px-2 py-0.5 text-[10px] font-semibold rounded bg-indigo-50 text-indigo-700 border border-indigo-100 uppercase tracking-wide">
+                      <span
+                        className={`px-2.5 py-0.5 text-[10px] font-semibold rounded-full border uppercase tracking-wide ${getStatusStyle(project.status)}`}
+                      >
                         {project.status}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 line-clamp-2 whitespace-pre-wrap">
+                    <p className="text-sm text-gray-600 line-clamp-2">
                       {project.description}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 border border-amber-100 shrink-0 self-start sm:self-auto">
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border border-amber-200/50 shrink-0 self-start sm:self-auto">
                     <Coins className="h-4 w-4 text-amber-600" />
                     <span className="text-sm font-bold">
                       {project.totalCoinsCollected || 0}
@@ -213,8 +233,17 @@ export function MyProfile() {
                 </Link>
               ))
             ) : (
-              <div className="p-8 text-center border border-dashed rounded-xl bg-gray-50 text-gray-400 text-sm">
-                You haven't launched any student projects yet.
+              <div className="p-12 text-center bg-white/70 backdrop-blur rounded-3xl border border-dashed border-teal-200/50 shadow-lg shadow-teal-200/10">
+                <p className="text-gray-400 text-sm">
+                  You haven't launched any projects yet.
+                </p>
+                <Link
+                  href="/create-project"
+                  className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-2xl text-sm font-medium hover:from-teal-500 hover:to-emerald-400 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Create Your First Project
+                </Link>
               </div>
             )}
           </div>

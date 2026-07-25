@@ -1,4 +1,4 @@
-import { desc, or, eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { projectsTable } from '../../../db';
 import { ProjectStatus } from '../../../types/index';
@@ -15,7 +15,7 @@ export const getLeaderboard = async (
     const leaderboardProjects = await db
       .select()
       .from(projectsTable)
-      .where(or(eq(projectsTable.status, 'APPROVED')))
+      .where(eq(projectsTable.status, 'APPROVED'))
       .orderBy(desc(projectsTable.totalCoinsCollected));
 
     return leaderboardProjects.map((project) => ({

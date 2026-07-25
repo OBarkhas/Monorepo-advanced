@@ -98,6 +98,17 @@ export type CoinTransaction = {
   createdAt: string;
 };
 
+export type WeeklyWinner = {
+  id: string;
+  rank: number;
+  projectId: string;
+  projectTitle: string;
+  creatorId: string;
+  coinsCollected: number;
+  weekLabel: string;
+  createdAt: string;
+};
+
 export type Response = {
   success: boolean;
   message: string;
@@ -125,7 +136,8 @@ export type UpdateProjectArgs = {
   creatorId: string;
 };
 
-export type UpdateProjectStatusArgs = {
+
+export type ProjectActionArgs = {
   id: string;
   status: ProjectStatus;
   reviewedById: string;
@@ -168,6 +180,7 @@ export interface QueryResolvers {
   getProjectById: BaseQueryResolver<Project | null, { id: string }>;
   getCommentsByProject: BaseQueryResolver<Comment[], { projectId: string }>;
   getLeaderboard: BaseQueryResolver<Project[]>;
+  getPreviousWeekWinners: BaseQueryResolver<WeeklyWinner[]>;
   getCoinAwardsByStudent: BaseQueryResolver<
     CoinTransaction[],
     { studentId: string }
@@ -178,7 +191,7 @@ export interface MutationResolvers {
   createUser: BaseMutationResolver<User, CreateUserArgs>;
   createProject: BaseMutationResolver<Project, CreateProjectArgs>;
   updateProject: BaseMutationResolver<Project, UpdateProjectArgs>;
-  updateProjectStatus: BaseMutationResolver<Project, UpdateProjectStatusArgs>;
+  projectAction: BaseMutationResolver<Project, ProjectActionArgs>;
   voteProject: BaseMutationResolver<Vote, VoteProjectArgs>;
   addComment: BaseMutationResolver<Comment, AddCommentArgs>;
   awardCoins: BaseMutationResolver<User, AwardCoinsArgs>;

@@ -4,4 +4,5 @@ export * from './get-projects';
 export * from './get-projects-by-id';
 export * from './get-comments-by-project-id';
 export { getLeaderboard } from './get-project-leaderboard';
+export { getPreviousWeekWinners } from './get-previous-week-winners';
 export * from './get-coin-awards-by-student';

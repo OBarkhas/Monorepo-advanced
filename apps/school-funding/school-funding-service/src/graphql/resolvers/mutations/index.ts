@@ -6,3 +6,4 @@ export * from './add-comment';
 export * from './award-coins';
 export * from './delete-project';
 export * from './delete-user';
+export * from './reset-weekly-leaderboard';

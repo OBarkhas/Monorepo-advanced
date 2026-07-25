@@ -56,6 +56,17 @@ export const projectTypeDefs = gql`
     createdAt: String!
   }
 
+  type WeeklyWinner {
+    id: ID!
+    rank: Int!
+    projectId: String!
+    projectTitle: String!
+    creatorId: String!
+    coinsCollected: Int!
+    weekLabel: String!
+    createdAt: String!
+  }
+
   extend type Query {
     getPublicProjects: [Project!]!
     getPendingProjects: [Project!]!
@@ -64,6 +75,7 @@ export const projectTypeDefs = gql`
     getCommentsByProject(projectId: ID!): [Comment!]!
     getLeaderboard: [Project!]!
     getCoinAwardsByStudent(studentId: ID!): [CoinTransaction!]!
+    getPreviousWeekWinners: [WeeklyWinner!]!
   }
 
   extend type Mutation {
@@ -82,7 +94,7 @@ export const projectTypeDefs = gql`
       creatorId: ID!
     ): Project!
 
-    updateProjectStatus(
+    projectAction(
       id: ID!
       status: ProjectStatus!
       reviewedById: ID!
@@ -90,8 +102,11 @@ export const projectTypeDefs = gql`
     ): Project!
 
     addComment(projectId: ID!, authorId: ID!, content: String!): Comment!
-    voteProject(projectId: ID!, studentId: ID!): Vote!
+
+    voteProject(projectId: ID!, userId: ID!, coinAmount: Int!): Vote!
+
     deleteProject(projectId: ID!, userId: ID!): Response!
     awardCoins(teacherId: ID!, studentId: ID!, amount: Int!): User!
+    resetWeeklyLeaderboard: Response!
   }
 `;

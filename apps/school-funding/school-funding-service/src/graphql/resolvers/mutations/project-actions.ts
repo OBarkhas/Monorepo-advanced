@@ -6,25 +6,19 @@ import {
   votesTable,
   coinTransactionsTable,
 } from '../../../db';
-import { ProjectStatus } from '../../../types/index';
+import { MutationResolvers, ProjectStatus } from '../../../types/index';
 import { drizzleProvider } from '../../../drizzle-provider/index';
 
-export const updateProjectStatus = async (
-  _: any,
-  args: {
-    id: string;
-    status: ProjectStatus;
-    reviewedById: string;
-    rejectionReason?: string;
-  },
-  { env }: { env: any },
+export const projectAction: MutationResolvers['projectAction'] = async (
+  _,
+  { id, status, reviewedById, rejectionReason },
+  { env },
 ) => {
-  const { id, status, reviewedById, rejectionReason } = args;
   try {
     const db = drizzleProvider(env.DB);
 
     const [reviewer] = await db
-      .select()
+      .select({ role: usersTable.role })
       .from(usersTable)
       .where(eq(usersTable.id, reviewedById));
 
@@ -52,19 +46,9 @@ export const updateProjectStatus = async (
     }
 
     return {
-      id: updatedProject.id,
-      title: updatedProject.title,
-      description: updatedProject.description,
-      images: updatedProject.images,
-      creatorId: updatedProject.creatorId,
+      ...updatedProject,
       status: updatedProject.status as ProjectStatus,
-      reviewedById: updatedProject.reviewedById,
-      rejectionReason: updatedProject.rejectionReason,
-      totalCoinsCollected: updatedProject.totalCoinsCollected,
-      endDate: updatedProject.endDate,
-      createdAt: updatedProject.createdAt,
-      updatedAt: updatedProject.updatedAt,
-    };
+    } as any;
   } catch (err: unknown) {
     if (err instanceof GraphQLError) throw err;
     throw new GraphQLError(
@@ -76,35 +60,43 @@ export const updateProjectStatus = async (
 
 export const voteProject = async (
   _: any,
-  args: { projectId: string; studentId: string },
+  args: { projectId: string; userId: string; coinAmount: number },
   { env }: { env: any },
 ) => {
-  const { projectId, studentId } = args;
+  const { projectId, userId, coinAmount } = args;
+
   try {
     const db = drizzleProvider(env.DB);
 
-    const [student] = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, studentId));
-
-    if (!student || student.role !== 'STUDENT') {
-      throw new GraphQLError('Only students can vote.', {
-        extensions: { code: 'FORBIDDEN' },
+    if (!coinAmount || coinAmount < 1) {
+      throw new GraphQLError('Minimum vote amount is 1 coin.', {
+        extensions: { code: 'BAD_USER_INPUT' },
       });
     }
 
-    if (student.coinBalance < 10) {
+    const [user] = await db
+      .select({ coinBalance: usersTable.coinBalance })
+      .from(usersTable)
+      .where(eq(usersTable.id, userId));
+
+    if (!user) {
+      throw new GraphQLError('User not found.', {
+        extensions: { code: 'BAD_USER_INPUT' },
+      });
+    }
+
+    if (user.coinBalance < coinAmount) {
       throw new GraphQLError(
-        'Not enough coins. Minimum 10 coins required to vote.',
-        {
-          extensions: { code: 'BAD_USER_INPUT' },
-        },
+        `Not enough coins. You have ${user.coinBalance} coins.`,
+        { extensions: { code: 'BAD_USER_INPUT' } },
       );
     }
 
     const [project] = await db
-      .select()
+      .select({
+        status: projectsTable.status,
+        creatorId: projectsTable.creatorId,
+      })
       .from(projectsTable)
       .where(eq(projectsTable.id, projectId));
 
@@ -114,15 +106,21 @@ export const voteProject = async (
       });
     }
 
+    if (project.creatorId === userId) {
+      throw new GraphQLError('You cannot vote for your own project.', {
+        extensions: { code: 'FORBIDDEN' },
+      });
+    }
+
     await db
       .update(usersTable)
-      .set({ coinBalance: sql`${usersTable.coinBalance} - 10` })
-      .where(eq(usersTable.id, studentId));
+      .set({ coinBalance: sql`${usersTable.coinBalance} - ${coinAmount}` })
+      .where(eq(usersTable.id, userId));
 
     await db
       .update(projectsTable)
       .set({
-        totalCoinsCollected: sql`${projectsTable.totalCoinsCollected} + 10`,
+        totalCoinsCollected: sql`${projectsTable.totalCoinsCollected} + ${coinAmount}`,
       })
       .where(eq(projectsTable.id, projectId));
 
@@ -130,25 +128,19 @@ export const voteProject = async (
       .insert(votesTable)
       .values({
         projectId,
-        studentId,
-        coinAmount: 10,
+        studentId: userId,
+        coinAmount,
       })
       .returning();
 
     await db.insert(coinTransactionsTable).values({
-      userId: studentId,
-      amount: -10,
+      userId,
+      amount: -coinAmount,
       type: 'VOTE',
       referenceId: projectId,
     });
 
-    return {
-      id: newVote.id,
-      projectId: newVote.projectId,
-      studentId: newVote.studentId,
-      coinAmount: newVote.coinAmount,
-      createdAt: newVote.createdAt,
-    };
+    return newVote as any;
   } catch (err: unknown) {
     if (err instanceof GraphQLError) throw err;
     throw new GraphQLError(

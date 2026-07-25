@@ -1,21 +1,14 @@
 import { eq } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { projectsTable } from '../../../db';
-import { ProjectStatus } from '../../../types/index';
+import { MutationResolvers, ProjectStatus } from '../../../types/index';
 import { drizzleProvider } from '../../../drizzle-provider/index';
 
-export const updateProject = async (
-  _: any,
-  args: {
-    id: string;
-    title?: string;
-    description?: string;
-    images?: string[];
-    creatorId: string;
-  },
-  { env }: { env: any },
+export const updateProject: MutationResolvers['updateProject'] = async (
+  _,
+  { id, title, description, images, creatorId },
+  { env },
 ) => {
-  const { id, title, description, images, creatorId } = args;
   const db = drizzleProvider(env.DB);
 
   try {
@@ -39,9 +32,7 @@ export const updateProject = async (
     if (project.status === 'APPROVED' || project.status === 'FUNDED') {
       throw new GraphQLError(
         'Approved or funded projects cannot be modified.',
-        {
-          extensions: { code: 'FORBIDDEN' },
-        },
+        { extensions: { code: 'FORBIDDEN' } },
       );
     }
 
@@ -63,23 +54,11 @@ export const updateProject = async (
       .returning();
 
     return {
-      id: updatedProject.id,
-      title: updatedProject.title,
-      description: updatedProject.description,
-      images: updatedProject.images,
-      creatorId: updatedProject.creatorId,
+      ...updatedProject,
       status: updatedProject.status as ProjectStatus,
-      reviewedById: updatedProject.reviewedById,
-      rejectionReason: updatedProject.rejectionReason,
-      totalCoinsCollected: updatedProject.totalCoinsCollected,
-      endDate: updatedProject.endDate,
-      createdAt: updatedProject.createdAt,
-      updatedAt: updatedProject.updatedAt,
-    };
+    } as any;
   } catch (err: unknown) {
-    if (err instanceof GraphQLError) {
-      throw err;
-    }
+    if (err instanceof GraphQLError) throw err;
     throw new GraphQLError(
       `error: ${err instanceof Error ? err.message : 'undefined'}`,
       { extensions: { code: 'INTERNAL_SERVER_ERROR' } },
