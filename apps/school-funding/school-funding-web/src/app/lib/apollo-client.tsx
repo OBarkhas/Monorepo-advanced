@@ -4,7 +4,7 @@ import {
   ApolloLink,
   HttpLink,
 } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+import { SetContextLink } from '@apollo/client/link/context';
 
 type GetTokenType = () => Promise<string | null>;
 
@@ -13,7 +13,7 @@ const httpLink = new HttpLink({
 });
 
 export const createApolloClient = (getToken: GetTokenType) => {
-  const authLink = setContext(async (prevContext, operation) => {
+  const authLink = new SetContextLink(async (prevContext, operation) => {
     try {
       const token = await getToken();
 

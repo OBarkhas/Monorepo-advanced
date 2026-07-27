@@ -3,9 +3,8 @@
   "compilerOptions": {
     "rootDir": ".",
     "moduleResolution": "bundler",
-    "ignoreDeprecations": "5.0",
     "resolvePackageJsonImports": true,
-    "target": "es2024",
+    "target": "es2022",
     "module": "esnext",
     "skipLibCheck": true,
     "importHelpers": false,
